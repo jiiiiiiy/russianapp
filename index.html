@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+   
+   <!--icon-->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.6.3/css/all.min.css"
+   />
+     <!--font-->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Roboto&display=swap" rel="stylesheet">
+     <!--user style-->
+     <link rel="stylesheet" href="style.css">
+
+  <title>러시아어 학습 어플</title>
+  <style>
+
+    .word-item {
+      margin-bottom: 20px;
+    }
+
+    .word-item img {
+      cursor: pointer;
+      width: 300px;
+    }
+
+     /* Additional styles for the icons */
+     .word-item .icon {
+      font-size: 20px;
+      margin-right: 5px;
+    }
+
+    .word-item .korean {
+      display: block;
+      font-weight: bold;
+      font-size : 13pt;
+    }
+
+    .word-item .russian {
+      display: none;
+      font-style: italic;
+      font-size: 13pt;
+    }
+    .wordbook{
+        display : grid;
+        grid-template-columns: 300px 300px 300px 300px;
+
+    }
+    .reset_entire{
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      margin: 20px;
+    }
+    .translate_button{
+      position: fixed;
+      top : 0;
+      right: 0;
+      margin: 20px;
+    }
+    .group
+    {
+      font-size : 11pt;
+      color:blue;
+      
+       
+    }
+    
+
+  </style>
+</head>
+
+<body>
+  <h1>러시아어 학습 어플</h1>
+  <div class="wordbook">
+    
+    
+    {% for sentence in topics_duplicate %}
+      
+        
+        <div class="word-item">
+          <h1 class = "group">{{sentence[4]}}</h1>
+          <img src="{{ sentence[1] }}" onclick="showKorean({{ loop.index0 }})">
+          <div class="korean">{{ sentence[2] }}</div>
+          <div class="russian">{{ sentence[3] }}</div>
+          <button class="icon" onclick="playRussianPronunciation({{ loop.index0 }})"><i class="fas fa-volume-up"></i></button>
+          <button class="icon" onclick="resetItem({{ loop.index0 }})"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        
+        {% set current_class = sentence[4] %}
+      {% endfor %}
+      
+      </div> <!-- Close the last group -->
+      
+    </div>
+    
+    <div>
+      <button class="reset_entire icon" onclick="resetAll()"><i class="fas fa-undo-alt"></i></button>
+    </div>
+  </div>
+</body>
+
+
+  
+  
+    <!-- 스크립트 코드... -->
+
+  <script>
+      const wordItems = document.querySelectorAll('.word-item');
+      let currentIndex = 0;
+      let timerId;
+
+      function showKorean(index) {
+        const koreanElement = wordItems[index].querySelector('.korean');
+        const russianElement = wordItems[index].querySelector('.russian');
+
+        koreanElement.style.display = 'block';
+        russianElement.style.display = 'none';
+
+        clearTimeout(timerId);
+        timerId = setTimeout(() => {
+          showRussian(index);
+        }, 5000);
+      }
+
+      function showRussian(index) {
+        const koreanElement = wordItems[index].querySelector('.korean');
+        const russianElement = wordItems[index].querySelector('.russian');
+
+        koreanElement.style.display = 'none';
+        russianElement.style.display = 'block';
+        playRussianPronunciation(index);
+      }
+
+      function playRussianPronunciation(index) {
+        const russianText = wordItems[index].querySelector('.russian').textContent;
+        const pronunciation = new SpeechSynthesisUtterance(russianText);
+        pronunciation.lang = 'ru';
+        speechSynthesis.speak(pronunciation);
+      }
+
+      function resetItem(index) {
+        const koreanElement = wordItems[index].querySelector('.korean');
+        const russianElement = wordItems[index].querySelector('.russian');
+        koreanElement.style.display = 'none';
+        russianElement.style.display = 'none';
+        clearTimeout(timerId);
+      }
+
+      function resetAll() {
+        for (const wordItem of wordItems) {
+          const koreanElement = wordItem.querySelector('.korean');
+          const russianElement = wordItem.querySelector('.russian');
+          koreanElement.style.display = 'none';
+          russianElement.style.display = 'none';
+        }
+        clearTimeout(timerId);
+      } 
+
+
+    
+
+</script>
+  
+</body>
+</html>
